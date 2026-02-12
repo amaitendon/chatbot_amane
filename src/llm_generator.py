@@ -28,7 +28,20 @@ def load_character_prompt():
     except FileNotFoundError:
         print("Warning: character_prompt.txt not found. Using default prompt.")
 
-        return "あなたは親切なAIアシスタントです。ニュースを要約してください。"
+        return "キャラ設定読み込みエラーが起きています。"
+
+def load_user_prompt():
+    """
+    post_prompt.txt からSNS投稿用の記事紹介文作成プロンプトを読み込む
+    """
+    try:
+        with open(PROJECT_ROOT / "post_prompt.txt", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        print("Warning: post_prompt.txt not found. Using default prompt.")
+
+        return "指示読み込みエラーが起きています。"
+
 
 def generate_post(news_item):
     """
@@ -46,22 +59,14 @@ def generate_post(news_item):
     try:
         character_prompt = load_character_prompt()
         
-        user_prompt = f"""
-        以下のAI関連記事を元に、SNS投稿文を作成してください。
-        まず、記事の内容を120文字以内で要約してください。
-        初心者にも分かりやすい表現を使って
-
-        次に、記事に対する感想を120文字以内で述べてください。
-
-        【制約事項】
-        - 記事の内容に基づいた事実にのみ言及すること（ハルシネーション防止）
-        - 入力されたニュースのURLは含めないでください（別途付与します）
- 
+        user_prompt = load_user_prompt() + f"""
         以下記事の内容です
         ---
         {news_item['title']}
         {news_item['summary']}
         ---
+        以上記事の内容でした。
+        それではSNSに投稿する内容を作成してください。
         """
         client = genai.Client(api_key=API_KEY)
         response = client.models.generate_content(
@@ -80,5 +85,5 @@ if __name__ == "__main__":
         "title": "AIがプログラミングを支援する新ツール発表",
         "summary": "XYZ社は、開発者の生産性を向上させる新しいAI搭載コーディングアシスタントを発表しました。"
     }
-    print(load_character_prompt())
+    # print(load_character_prompt())
     # print(generate_post(dummy_news))
