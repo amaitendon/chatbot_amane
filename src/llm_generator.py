@@ -18,31 +18,6 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash-lite")
 
 
-def load_character_prompt():
-    """
-    character_prompt.txt からキャラクタープロンプトを読み込む。
-    """
-    try:
-        with open(PROJECT_ROOT / "character_prompt.txt", "r", encoding="utf-8") as f:
-            return f.read()
-    except FileNotFoundError:
-        print("Warning: character_prompt.txt not found. Using default prompt.")
-
-        return "キャラ設定読み込みエラーが起きています。"
-
-def load_user_prompt():
-    """
-    post_prompt.txt からSNS投稿用の記事紹介文作成プロンプトを読み込む
-    """
-    try:
-        with open(PROJECT_ROOT / "post_prompt.txt", "r", encoding="utf-8") as f:
-            return f.read()
-    except FileNotFoundError:
-        print("Warning: post_prompt.txt not found. Using default prompt.")
-
-        return "指示読み込みエラーが起きています。"
-
-
 def generate_post(news_item, append_instruction=None):
     """
     記事タイトルとサマリーを元に、Gemini APIを使用して、SNS投稿文を生成する。
@@ -61,13 +36,13 @@ def generate_post(news_item, append_instruction=None):
         google.genai.errors.ServerError: Google側のサーバーエラーや一時的な過負荷（500系エラー）
             が発生した際に発生します。
         ValueError: 安全フィルターによってコンテンツがブロックされ、テキストが空の場合に発生します。
+        FileNotFoundError: character_prompt.txt または post_prompt.txt が見つからない場合に発生します。
     """
     if not API_KEY:
         raise ValueError("APIキーが設定されていません！オーナー、API使用料を出し惜しみしないでくださいね！")
 
-    character_prompt = load_character_prompt()
-    
-    user_prompt = load_user_prompt() + f"""
+    character_prompt = Path(PROJECT_ROOT / "character_prompt.txt").read_text(encoding="utf-8")
+    user_prompt = Path(PROJECT_ROOT / "post_prompt.txt").read_text(encoding="utf-8") + f"""
     以下記事の内容です
     ---
     {news_item['title']}
