@@ -2,3 +2,5 @@ atproto
 python-dotenv
 feedparser
 google-genai
+httpx
+beautifulsoup4
