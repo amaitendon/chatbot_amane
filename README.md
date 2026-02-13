@@ -6,7 +6,7 @@
 
 ## 🌟 プロジェクト概要
 
-毎日指定した時間（JST 20:00など）に、RSSフィード（ZennのAIトピック）から記事を1件ピックアップし、Google Geminiを使用してキャラクターの口調に変換した上でBlueskyへ投稿します。
+毎日指定した時間（JST 19:30など）に、RSSフィード（ZennのAIトピック）から記事を1件ピックアップし、Google Geminiを使用してキャラクターの口調に変換した上でBlueskyへ投稿します。
 
 ### 主な機能
 * **自動ニュース収集:** `feedparser` を使用して Zenn の RSS フィードから 24 時間以内の記事を取得。
@@ -30,7 +30,7 @@
 | **プラットフォーム** | Bluesky |
 | **AI (LLM)** | Google Gemini API |
 | **自動化** | GitHub Actions |
-| **主なライブラリ** | `atproto`, `google-genai`, `feedparser` |
+| **主なライブラリ** | `atproto`, `google-genai`, `feedparser`, 等 |
 
 ---
 
