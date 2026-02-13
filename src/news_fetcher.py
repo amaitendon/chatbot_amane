@@ -15,24 +15,20 @@ import sys
 
 RSS_URL = "https://zenn.dev/topics/ai/feed"
 
-def fetch_latest_ai_news(index=0):
+def fetch_latest_ai_news():
     """
-    ZennのAIトピックから24時間以内の最新ニュースを取得する。
-    
-    Args:
-        index (int): 取得するニュースのインデックス（0が最新）。
-                     記事数を超える場合は剰余を取って選択する。
+    ZennのAIトピックから24時間以内の最新ニュースを全て取得する。
     
     Returns:
-        dict: ニュースの情報（title, link, summary, published）
-        None: 24時間以内のニュースがない場合
+        list: ニュース情報のリスト（各要素は dict: title, link, summary, published）
+              24時間以内のニュースがない場合は空リスト []
     """
     print(f"Fetching RSS from {RSS_URL}...")
     feed = feedparser.parse(RSS_URL)
     
     if not feed.entries:
         print("No entries found in RSS feed.")
-        return None
+        return []
         
     # 現在時刻（UTC）
     now = datetime.now(timezone.utc)
@@ -55,36 +51,23 @@ def fetch_latest_ai_news(index=0):
                     "published": published_time.strftime('%Y-%m-%d %H:%M:%S')
                 })
     
-    if not recent_articles:
-        print("No news found within the last 24 hours.")
-        return None
-
-    # 記事数
     count = len(recent_articles)
+    if count == 0:
+        print("No news found within the last 24 hours.")
+        return []
+
     print(f"Found {count} recent articles.")
-
-    # インデックスの正規化（剰余）
-    target_index = index % count
-    print(f"Selected index: {target_index} (requested: {index})")
-
-    return recent_articles[target_index]
+    return recent_articles
 
 if __name__ == "__main__":
-    # コマンドライン引数からインデックスを取得
-    target_idx = 0
-    if len(sys.argv) > 1:
-        try:
-            target_idx = int(sys.argv[1])
-        except ValueError:
-            print("Invalid index provided. Using default (0).")
-
     # Test the function
-    news = fetch_latest_ai_news(target_idx)
-    if news:
-        print("Latest News Found:")
-        print(f"Title: {news['title']}")
-        print(f"Link: {news['link']}")
-        print(f"Published: {news['published']}")
-        print(f"Summary: {news['summary']}")
+    news_list = fetch_latest_ai_news()
+    if news_list:
+        print(f"Found {len(news_list)} articles:")
+        for i, news in enumerate(news_list):
+            print(f"[{i+1}] {news['title']}")
+            print(f"    Link: {news['link']}")
+            print(f"    Published: {news['published']}")
+            print(f"    Summary: {news['summary']}")
     else:
         print("No news found.")
