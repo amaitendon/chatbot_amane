@@ -40,9 +40,15 @@ def generate_post(news_item, append_instruction=None):
     """
     if not API_KEY:
         raise ValueError("APIキーが設定されていません！オーナー、API使用料を出し惜しみしないでくださいね！")
-
-    character_prompt = Path(PROJECT_ROOT / "character_prompt.txt").read_text(encoding="utf-8")
-    user_prompt = Path(PROJECT_ROOT / "post_prompt.txt").read_text(encoding="utf-8") + f"""
+    
+    character_prompt = os.getenv("CHARACTER_PROMPT")
+    if character_prompt is None:
+        character_prompt = Path(PROJECT_ROOT / "character_prompt.txt").read_text(encoding="utf-8")
+    user_prompt = os.getenv("POST_PROMPT")
+    if user_prompt is None:
+        user_prompt = Path(PROJECT_ROOT / "post_prompt.txt").read_text(encoding="utf-8")
+    
+    user_prompt += f"""
     以下記事の内容です
     ---
     {news_item['title']}
