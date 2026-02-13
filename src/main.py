@@ -30,6 +30,7 @@ def main():
         recent_posts = bsky.get_recent_posts(limit=10)
     else:
         logging.error("Failed to login to Bluesky. Continuing without duplicate check.")
+        return
 
     # 2. Fetch News
     logging.info("Fetching daily AI news...")
